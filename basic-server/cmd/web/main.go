@@ -1,19 +1,26 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 const PORT = ":8080"
 
+type application struct {
+	logger *slog.Logger
+}
+
 func main() {
-	mux := http.NewServeMux()
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+	addr := flag.String("addr", PORT, "HTTP network address")
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	mux.HandleFunc("/", home)
+	app := application{logger: logger}
 
-	log.Printf("starting server on %s", PORT)
-	log.Fatal(http.ListenAndServe(PORT, mux))
+	logger.Info("Starting server on ", "addr", *addr)
+	err := http.ListenAndServe(PORT, app.routes())
+	logger.Error(err.Error())
+	os.Exit(1)
 }
