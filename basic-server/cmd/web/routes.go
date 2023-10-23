@@ -10,5 +10,6 @@ func (app *application) routes() *http.ServeMux {
 
 	mux.HandleFunc("/", app.home)
 	mux.HandleFunc("/hello-world", app.helloWorld)
+	mux.HandleFunc("/form", app.form)
 	return mux
 }
