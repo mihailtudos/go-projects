@@ -30,5 +30,15 @@ func (app *application) form(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, http.StatusOK, "form.gohtml", app.newTemplateData(r))
+	if r.Method == http.MethodGet {
+		app.render(w, r, http.StatusOK, "form.gohtml", app.newTemplateData(r))
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error parsing the form", http.StatusUnprocessableEntity)
+		return
+	}
+
+	fmt.Fprintf(w, "email: %s \n", r.FormValue("email"))
 }
