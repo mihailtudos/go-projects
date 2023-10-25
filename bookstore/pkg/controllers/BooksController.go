@@ -59,7 +59,13 @@ func UpdateBooks(w http.ResponseWriter, r *http.Request) {
 		book.Publication = updatedBook.Publication
 	}
 
-	db.Updates(book)
+	db.Save(&book)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	res, _ := json.Marshal(book)
+
+	_, _ = w.Write(res)
 }
 
 func DeleteBooks(w http.ResponseWriter, r *http.Request) {
